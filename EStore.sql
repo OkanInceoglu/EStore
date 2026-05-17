@@ -169,7 +169,7 @@ SELECT TOP 1 *
 FROM Products
 ORDER BY price DESC;
 
-SELECT COUNT(*) AS BrojPotrebiteli
+SELECT COUNT(id) AS BrojPotrebiteli
 FROM Users;
 
 SELECT *
@@ -243,3 +243,41 @@ DROP COLUMN password;
 
 ALTER TABLE Users 
 ALTER COLUMN password_hash varchar(512);
+
+SELECT TOP 1 p.product_name, SUM(oi.quantity) AS total_sold
+FROM Products p JOIN Orderitems oi 
+ON p.id = oi.Oproduct_id
+GROUP BY p.product_name
+ORDER BY total_sold DESC;
+
+SELECT TOP 1 p.product_name ,SUM(oi.unit_price*oi.quantity) as Prime_product
+FROM Products p JOIN Orderitems oi 
+ON p.id=oi.Oproduct_id
+GROUP BY p.product_name
+ORDER BY Prime_product DESC;
+
+SELECT p.product_name , oi.quantity
+FROM Products p LEFT JOIN Orderitems oi
+ON p.id=oi.Oproduct_id
+WHERE oi.quantity IS NULL;
+
+Select c.category_name , SUM(oi.unit_price * oi.quantity) as revnue
+FROM Categories c JOIN Products p ON c.id=p.Pcategory_id JOIN Orderitems oi ON p.id=oi.Oproduct_id
+GROUP BY c.category_name;
+
+SELECT TOP 1 u.full_name,SUM(oi.quantity*oi.unit_price) as total_pay
+FROM Users u JOIN Reviews r ON u.id=r.Ruser_id JOIN Products p ON r.Rproduct_id=p.id JOIN Orderitems oi ON p.id=oi.Oproduct_id
+Group by u.full_name
+Order by total_pay DESC;
+
+SELECT c.category_name,AVG(p.price) as avg_price
+FROM Categories c JOIN Products p ON c.id=p.Pcategory_id
+GROUP BY c.category_name;
+
+SELECT *
+FROM Products JOIN Categories ON Products.Pcategory_id=Categories.id;
+
+SELECT Oorder_id,COUNT(Oproduct_id) AS product_count
+FROM Orderitems
+GROUP BY Oorder_id
+HAVING COUNT(Oproduct_id) > 1;
